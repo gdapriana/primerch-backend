@@ -108,4 +108,19 @@ export class UserService {
     if (!userCheck) throw new ResponseError(ErrorResponseMessage.FORBIDDEN());
     return GenerateToken.renewToken(refreshToken);
   }
+  static async LOGOUT(userId: string): Promise<{id: string}> {
+    const user = await database.findFirst({
+      where: { id: userId },
+      select: {email: true, id: true}
+    })
+    if (!user) throw new ResponseError(ErrorResponseMessage.FORBIDDEN());
+    await database.updateMany({
+      where: {email: user.email},
+      data: {
+        refreshToken: undefined,
+        accessToken: undefined,
+      }
+    })
+    return {id: user.id}
+  }
 }

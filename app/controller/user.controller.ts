@@ -77,4 +77,15 @@ export class UserController {
       next(error);
     }
   }
+  
+  static async LOGOUT(req: UserRequest, res: Response, next: NextFunction) {
+    try {
+      const userId = req.user?.id!;
+      const response: {id: string} = await UserService.LOGOUT(userId);
+      res.clearCookie("refreshToken");
+      res.status(200).json({...SuccessReponse.LOGOUT, result: {item: response, pagination: null}});
+    } catch (e) {
+      next(e);
+    }
+  }
 }

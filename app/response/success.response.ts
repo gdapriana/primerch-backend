@@ -11,6 +11,11 @@ export class SuccessReponse {
     status: 200,
     success: true,
   };
+  static LOGOUT: SuccessResponseType = {
+    message: "logout successfully",
+    status: 200,
+    success: true,
+  };
   static QUERY_ITEM: SuccessResponseType = {
     message: "query item successfully",
     status: 200,

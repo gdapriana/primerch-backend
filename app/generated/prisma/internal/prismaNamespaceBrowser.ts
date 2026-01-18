@@ -167,6 +167,8 @@ export type SizeScalarFieldEnum = (typeof SizeScalarFieldEnum)[keyof typeof Size
 export const VariantScalarFieldEnum = {
   id: 'id',
   stock: 'stock',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
   priceModifier: 'priceModifier',
   productId: 'productId',
   colourId: 'colourId',

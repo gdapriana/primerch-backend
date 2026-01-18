@@ -1,12 +1,22 @@
 import z from "zod";
-import type { Order } from "../generated/prisma/client";
+import { type Order, ORDER_STATUS, PAYMENT_METHOD } from "../generated/prisma/client";
 import type { PaginationType } from "../type/response.type";
 
-const sortableFields = ["createdAt", "updatedAt"] as const;
+const sortableFields = ["createdAt", "updatedAt", "fullName", "email", "total"] as const;
 
 export class OrderValidation {
   static QUERY = z.object({
+    fullName: z.string().optional(),
+    email: z.string().optional(),
+    phone: z.string().optional(),
+    address: z.string().optional(),
     cursor: z.string().optional(),
+    status: z.enum(ORDER_STATUS).optional(),
+    paymentMethod: z.enum(PAYMENT_METHOD).optional(),
+    total: z.coerce
+      .number()
+      .int()
+      .min(1, "Take must be a positive integer").optional(),
     take: z.coerce
       .number()
       .int()

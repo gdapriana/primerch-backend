@@ -7,6 +7,19 @@ import type { Order } from "../generated/prisma/client";
 import type { OrderQueryResponse } from "../validation/order.validation";
 
 export class OrderController {
+  static async QUERY(
+    req: UserRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const query = req.query as any
+      const response: OrderQueryResponse = await OrderService.QUERY(query);
+      res.status(200).json({...SuccessReponse.QUERY_ITEM, result: response});
+    } catch (e) {
+      next(e)
+    }
+  }
   static async GET_USER_ORDER(
     req: UserRequest,
     res: Response,

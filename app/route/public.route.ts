@@ -9,6 +9,8 @@ import { LikeController } from "../controller/like.controller";
 import { BookmarkController } from "../controller/bookmark.controller";
 import { ReviewController } from "../controller/review.controller";
 import { CategoryController } from "../controller/category.controller";
+import { VariantController } from "../controller/variant.controller.ts";
+import { OrderController } from "../controller/order.controller.ts";
 
 const publicRoute = express.Router();
 
@@ -32,4 +34,8 @@ publicRoute.get(
 publicRoute.get("/products/:productId/reviews", ReviewController.QUERY);
 publicRoute.get("/products/:productId/total-reviews", ReviewController.TOTAL);
 
+
+// 
+
+publicRoute.get('/orders', OrderController.QUERY);
 export default publicRoute;

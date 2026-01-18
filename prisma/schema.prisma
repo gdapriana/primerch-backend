@@ -110,13 +110,15 @@ model Size {
 }
 
 model Variant {
-  id            String  @id @default(cuid())
-  stock         Int     @default(0)
-  priceModifier Decimal @default(0)
+  id        String   @id @default(cuid())
+  stock     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  productId String
-  colourId  String
-  sizeId    String
+  priceModifier Decimal @default(0)
+  productId     String
+  colourId      String
+  sizeId        String
 
   product Product @relation(fields: [productId], references: [id])
   colour  Colour  @relation(fields: [colourId], references: [id])

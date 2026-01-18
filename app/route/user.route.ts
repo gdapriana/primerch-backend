@@ -11,6 +11,7 @@ const userRoute = express.Router();
 userRoute.use(userMiddleware);
 
 userRoute.get("/me", UserController.ME);
+userRoute.delete("/logout", UserController.LOGOUT);
 
 userRoute.get("/cart", CartController.GET);
 userRoute.patch(
@@ -51,5 +52,7 @@ userRoute.get(
   "/products/:productId/check-review",
   ReviewController.CHECK_IS_REVIEWED
 );
+
+
 
 export default userRoute;

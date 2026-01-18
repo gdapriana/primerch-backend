@@ -13,12 +13,67 @@ import {
   type OrderValidationQuery,
 } from "../validation/order.validation";
 import Validation from "../validation/validation";
+import type { Prisma } from "../generated/prisma/client.ts";
 
 const validation: typeof OrderValidation = OrderValidation;
 const shippingFee: number = 5;
 const database = prismaClient.order;
 
 export class OrderService {
+  static async QUERY(query: OrderValidationQuery): Promise<OrderQueryResponse> {
+    const validatedQuery: OrderValidationQuery = Validation.validate(validation.QUERY, query);
+    const {order, cursor, address, fullName, take, total, phone, sort, paymentMethod, email, status} = validatedQuery;
+    
+    const where: Prisma.OrderWhereInput = {
+      ...(fullName && { fullName: {contains: fullName, mode: 'insensitive' } }),
+      ...(address && { address: {contains: address, mode: 'insensitive' } }),
+      ...(phone && { phone: {contains: phone, mode: 'insensitive' } }),
+      ...(paymentMethod && { paymentMethod }),
+      ...(status && { status }),
+      ...(email && { email: {contains: email, mode: 'insensitive' } }),
+      ...(total && { total }),
+    }
+
+    let orderBy: Prisma.OrderOrderByWithRelationInput = {
+      [sort]: order,
+    }
+    const [orders, totalFiltered, totalAll] = await Promise.all([
+      database.findMany({
+        where,
+        orderBy,
+        take: take + 1,
+        ...(cursor && {
+          cursor: { id: cursor },
+          skip: 1,
+        }),
+        include: {
+          items: {
+            select: {
+              quantity: true,
+              variant: true
+            }
+          }
+        }
+      }),
+      database.count({where}),
+      database.count()
+    ])
+
+
+    const hasNext = orders.length > take;
+    const items = hasNext ? orders.slice(0, take) : orders;
+
+    return {
+      items,
+      pagination: {
+        take,
+        hasNext,
+        nextCursor: hasNext ? items[items.length - 1]?.id : null,
+        totalFiltered,
+        totalAll,
+      }
+    }
+  }
   static async GET_USER_ORDER(
     userId: string,
     query: OrderValidationQuery
