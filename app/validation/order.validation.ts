@@ -6,10 +6,7 @@ const sortableFields = ["createdAt", "updatedAt", "fullName", "email", "total"] 
 
 export class OrderValidation {
   static QUERY = z.object({
-    fullName: z.string().optional(),
-    email: z.string().optional(),
-    phone: z.string().optional(),
-    address: z.string().optional(),
+    q: z.string().optional(),
     cursor: z.string().optional(),
     status: z.enum(ORDER_STATUS).optional(),
     paymentMethod: z.enum(PAYMENT_METHOD).optional(),
@@ -57,12 +54,16 @@ export class OrderValidation {
       ])
       .default("CASH_ON_DELIVERY"),
   });
+  static UPDATE_ORDER_STATUS = z.object({
+    status: z.enum(ORDER_STATUS),
+  });
 }
 
 export type OrderValidationQuery = z.infer<typeof OrderValidation.QUERY>;
 export type OrderValidationCreateOrder = z.infer<
   typeof OrderValidation.CREATE_ORDER
 >;
+export type OrderValidationUpdateOrderStatus = z.infer<typeof OrderValidation.UPDATE_ORDER_STATUS>;
 
 export type OrderQueryResponse = {
   items: Order[];

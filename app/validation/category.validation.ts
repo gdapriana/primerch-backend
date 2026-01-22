@@ -27,9 +27,25 @@ export class CategoryValidation {
   });
 }
 
+export class CategoryAdminValidation {
+  static POST = z.object({
+    name: z.string().min(2),
+    description: z.string().min(3).optional().nullable(),
+    coverId: z.string().min(1).optional().nullable(),
+  })
+  static PATCH = z.object({
+    name: z.string().min(2).optional(),
+    description: z.string().min(3).optional().nullable(),
+    coverId: z.string().min(1).optional().nullable(),
+  })
+}
+
 export type CategoryValidationQuery = z.infer<typeof CategoryValidation.QUERY>;
 export type CategoryValidationGet = z.infer<typeof CategoryValidation.GET>;
 export type CategoryQueryResponse = {
   items: Category[];
   pagination: PaginationType;
 };
+
+export type CategoryAdminValidationPost = z.infer<typeof CategoryAdminValidation.POST>;
+export type CategoryAdminValidationPatch = z.infer<typeof CategoryAdminValidation.PATCH>;

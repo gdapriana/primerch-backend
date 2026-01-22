@@ -42,7 +42,7 @@ model Product {
   categoryId String?
   coverId    String?
 
-  category Category? @relation("ProductCategory", fields: [categoryId], references: [id])
+  category Category? @relation("ProductCategory", fields: [categoryId], references: [id], onDelete: SetNull, onUpdate: SetNull)
   cover    Media?    @relation("ProductCover", fields: [coverId], references: [id], onDelete: SetNull, onUpdate: SetNull)
   gallery  Media[]   @relation("ProductGallery")
   reviews  Review[]

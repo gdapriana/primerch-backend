@@ -10,7 +10,7 @@ import {
   OrderValidation,
   type OrderQueryResponse,
   type OrderValidationCreateOrder,
-  type OrderValidationQuery,
+  type OrderValidationQuery, type OrderValidationUpdateOrderStatus
 } from "../validation/order.validation";
 import Validation from "../validation/validation";
 import type { Prisma } from "../generated/prisma/client.ts";
@@ -22,15 +22,19 @@ const database = prismaClient.order;
 export class OrderService {
   static async QUERY(query: OrderValidationQuery): Promise<OrderQueryResponse> {
     const validatedQuery: OrderValidationQuery = Validation.validate(validation.QUERY, query);
-    const {order, cursor, address, fullName, take, total, phone, sort, paymentMethod, email, status} = validatedQuery;
+    const {order, cursor, take, total, q, sort, paymentMethod, status} = validatedQuery;
     
     const where: Prisma.OrderWhereInput = {
-      ...(fullName && { fullName: {contains: fullName, mode: 'insensitive' } }),
-      ...(address && { address: {contains: address, mode: 'insensitive' } }),
-      ...(phone && { phone: {contains: phone, mode: 'insensitive' } }),
+      ...(q && {
+        OR: [
+          {fullName: {contains: q, mode: "insensitive"}},
+          {address: {contains: q, mode: "insensitive"}},
+          {phone: {contains: q, mode: "insensitive"}},
+          {email: {contains: q, mode: "insensitive"}},
+        ]
+      }),
       ...(paymentMethod && { paymentMethod }),
       ...(status && { status }),
-      ...(email && { email: {contains: email, mode: 'insensitive' } }),
       ...(total && { total }),
     }
 
@@ -46,14 +50,7 @@ export class OrderService {
           cursor: { id: cursor },
           skip: 1,
         }),
-        include: {
-          items: {
-            select: {
-              quantity: true,
-              variant: true
-            }
-          }
-        }
+        include: OrderResponse.QUERY
       }),
       database.count({where}),
       database.count()
@@ -265,5 +262,11 @@ export class OrderService {
     if (!transaction)
       throw new ResponseError(ErrorResponseMessage.INTERNAL_SERVER_ERROR());
     return transaction;
+  }
+  static async UPDATE_ORDER_STATUS(body: OrderValidationUpdateOrderStatus, orderId?: string): Promise<{ id: string }> {
+    const validatedBody: OrderValidationUpdateOrderStatus = Validation.validate(validation.UPDATE_ORDER_STATUS, body);
+    const checkOrder = await database.findUnique({where: {id: orderId}, select: {id: true}});
+    if (!checkOrder) throw new ResponseError(ErrorResponseMessage.NOT_FOUND("order"));
+    return database.update({where: {id: orderId}, data: {status: validatedBody.status}, select: {id: true}})
   }
 }

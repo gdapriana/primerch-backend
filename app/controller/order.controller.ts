@@ -100,4 +100,18 @@ export class OrderController {
       next(e);
     }
   }
+  static async UPDATE_ORDER_STATUS(
+    req: UserRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    const { orderId } = req.params;
+    const body = req.body;
+    const response: {id: string} = await OrderService.UPDATE_ORDER_STATUS(body, orderId);
+    res.status(200).json({...SuccessReponse.PATCH_ITEM, result: {item: response, pagination: null}});
+    try {
+    } catch (e) {
+      next(e);
+    } 
+  }
 }

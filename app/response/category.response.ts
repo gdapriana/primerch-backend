@@ -16,6 +16,7 @@ export class CategoryResponse {
     name: true,
     slug: true,
     id: true,
+    description: true,
     createdAt: true,
     updatedAt: true,
   };
