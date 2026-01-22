@@ -9,14 +9,14 @@ import { userMiddleware } from "../middleware/user.middleware.ts";
 
 const uploadRouter = Router();
 uploadRouter.post(
-  "/single",
+  "/media/single",
   userMiddleware,
   adminMiddleware,
   upload.single("image"),
   uploadSingleImage
 );
 uploadRouter.post(
-  "/multiple",
+  "/media/multiple",
   userMiddleware,
   adminMiddleware,
   upload.array("images", 10),

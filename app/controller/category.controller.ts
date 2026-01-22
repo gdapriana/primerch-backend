@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import { SuccessReponse } from "../response/success.response";
 import type { Category, Media } from "../generated/prisma/client";
 import { CategoryAdminService, CategoryService } from "../service/category.service";
-import type { CategoryQueryResponse } from "../validation/category.validation";
+import type { CategoryAdminValidationPost, CategoryQueryResponse } from "../validation/category.validation";
 import type { UserRequest } from "../type/request.type.ts";
 
 export class CategoryController {
@@ -58,8 +58,16 @@ export class CategoryAdminController {
       next(e);
     }
   }
-  static async GET_PRODUCTS(): Promise<void> {}
-  static async POST_CATEGORIES(): Promise<void> {}
+  static async GET_PRODUCTS(req: UserRequest, res: Response, next: NextFunction): Promise<void> {}
+  static async POST_CATEGORIES(req: UserRequest, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const body = req.body as CategoryAdminValidationPost;
+      const response: {id: string} = await CategoryAdminService.POST_CATEGORIES(body);
+      res.status(200).json(response);
+    } catch (e) {
+      next(e);
+    }
+  }
   static async PATCH_CATEGORIES(): Promise<void> {}
   static async DELETE_CATEGORIES(): Promise<void> {}
 }

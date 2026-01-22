@@ -6,9 +6,8 @@ export const uploadToCloudinary = (
 ): Promise<{ url: string; publicId: string }> => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader
-      .upload_stream({ folder }, (error, result) => {
+      .upload_stream({ folder, resource_type: "image" }, (error, result) => {
         if (error) return reject(error);
-
         resolve({
           url: result!.secure_url,
           publicId: result!.public_id,
